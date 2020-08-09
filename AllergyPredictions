@@ -1,0 +1,54 @@
+import os
+for dirname, _, filenames in os.walk('/kaggle/input'):
+    for filename in filenames:
+        print(os.path.join(dirname, filename))
+import nltk
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+%matplotlib inline
+input_data = pd.read_csv("/kaggle/input/newallergy/newallergyresults.csv")
+y_train = input_data["result"].values
+X_train = input_data["food"].values
+test_data = pd.read_csv("/kaggle/input/allergytestdata/newallergytestdata.csv")
+y_test = test_data["result"].values
+X_test = test_data["food"].values
+print (y_train)
+print (X_train)
+i = 0
+while i < len(y_train):
+    if (y_train[i] == "symptom"):
+        y_train[i] = 1
+    else:
+        y_train[i] = 0
+    i = i + 1
+j = 0
+while j < len(y_test):
+    if (y_test[j] == "symptom"):
+        y_test[j] = 1
+    else:
+        y_test[j] = 0
+    j = j + 1
+print(y_test)
+#train the vocabulary
+from sklearn.feature_extraction.text import CountVectorizer
+import tensorflow as tf
+bow = CountVectorizer(min_df=0, lowercase=False)
+bow.fit(X_train)
+print(bow.vocabulary_)
+X_train = bow.transform(X_train).toarray()
+print(X_train)
+X_test = bow.transform(X_test).toarray()
+print(y_train)
+import tensorflow as tf
+#build the model
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, Activation,Dropout, Flatten
+from sklearn.linear_model import LogisticRegression
+y_train = y_train.astype('int')
+y_test = y_test.astype('int')
+classifier = LogisticRegression()
+classifier.fit(X_train, y_train)
+score = classifier.score(X_test, y_test)
+print(score)
