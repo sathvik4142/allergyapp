@@ -1,0 +1,50 @@
+import com.opencsv.CSVReader;
+import com.opencsv.CSVWriter;
+
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+
+
+public class OpenCSVReader {
+	private static final String SAMPLE_CSV_FILE_PATH = "/Users/sathvikr/Downloads/testmapping.csv";
+	private static final String STRING_ARRAY_SAMPLE = "./string-array-sample.csv";
+	//read file
+	private static final String ingredients = "/Users/sathvikr/Documents/realIng.csv";
+	public static final String name = "";
+	public static void main(String[] args) throws IOException {
+		try (Reader reader = Files.newBufferedReader(Paths.get(SAMPLE_CSV_FILE_PATH));
+				CSVReader csvReader = new CSVReader(reader);
+				Reader reader1 = Files.newBufferedReader(Paths.get(ingredients));
+				CSVReader csvReader1 = new CSVReader(reader1);
+				Writer writer = Files.newBufferedWriter(Paths.get(STRING_ARRAY_SAMPLE));
+
+				CSVWriter csvWriter = new CSVWriter(writer, CSVWriter.DEFAULT_SEPARATOR, CSVWriter.NO_QUOTE_CHARACTER,
+						CSVWriter.DEFAULT_ESCAPE_CHARACTER, CSVWriter.DEFAULT_LINE_END);) {
+			//// Reading Records One by One in a String arrayß
+			String[] nextRecord;
+			 ArrayList<String[]>  aList =  
+	                  new ArrayList<String[]>(); 
+			String[] line;
+			while ((line = csvReader1.readNext()) != null) {
+				aList.add(line);
+			}
+			csvWriter.writeNext(csvReader.readNext());
+			while ((nextRecord = csvReader.readNext()) != null) {
+				for (int i = 0; i < aList.size(); i++) {
+					if (nextRecord[6].equals(aList.get(i)[0])) {
+						for (int j = 0; j < aList.get(i).length; j++) {
+							csvWriter.writeNext(new String[] { nextRecord[0], nextRecord[1], nextRecord[2], nextRecord[3],
+									nextRecord[4], nextRecord[5], aList.get(i)[j], nextRecord[7], nextRecord[9] });
+						}
+
+					}
+				}
+
+			}
+		}
+	}
+}
