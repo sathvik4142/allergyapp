@@ -1,0 +1,110 @@
+import com.opencsv.CSVReader;
+import com.opencsv.CSVWriter;
+import java.util.*;  
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import javax.mail.*;  
+import javax.mail.internet.*;  
+import javax.activation.*;  
+public class StatisticalAnalysis {
+	private static final String allergies = "/Users/sathvikr/Documents/abc.csv";
+	private static final String results = "./allergyresults.csv";
+	public static void main(String[] args) throws IOException{
+		Set<String>  ingredients =  new HashSet<String>();
+		Set<String> users = new HashSet<String>(); 
+
+		try (Reader reader = Files.newBufferedReader(Paths.get(allergies));
+				CSVReader csvReader = new CSVReader(reader)) {
+			String[] nextRecord;
+			//reading users and ingredients
+			while ((nextRecord = csvReader.readNext()) != null) {
+				if (nextRecord[8] != null) {
+					ingredients.add(nextRecord[6].toLowerCase());
+					users.add(nextRecord[1].toLowerCase());
+				}
+			}
+
+		}
+		System.out.println(users);
+		System.out.println(ingredients);
+		List<String> ingredientslist = new ArrayList<String>(ingredients.size());
+		for (String x : ingredients) {
+			ingredientslist.add(x.toLowerCase());
+		}
+		List<String> userslist = new ArrayList<String>(users.size());
+		for (String x : users) {
+			userslist.add(x);
+		}
+		int[][] symptoms = new int[users.size()][ingredients.size()];
+		for (int i = 0; i < users.size(); i++) {
+		try (Reader reader = Files.newBufferedReader(Paths.get(allergies));
+				CSVReader csvReader = new CSVReader(reader)) {
+			String[] nextRecord;
+			while ((nextRecord = csvReader.readNext()) != null) {
+				if (!nextRecord[8].equals("") && nextRecord[1].equals(userslist.get(i)) && !nextRecord[6].equals("")) {
+					int a = ingredientslist.indexOf(nextRecord[6].toLowerCase());
+					symptoms[i][a]++;
+				}
+			}
+		}
+		}
+		List<List<String>> output = new ArrayList<List<String>>();
+		int max = -1;
+		int second = -1;
+		int secondind = 0;
+		int third = -1;
+		int thirdind = 0;
+		int maxind = 0;
+		for (int i = 0; i <users.size(); i++) {
+			for (int j = 0; j < ingredients.size(); j++) {
+				if (symptoms[i][j] > max) {
+					max = symptoms[i][j];
+					maxind = j;
+				}
+				else if (symptoms[i][j] > second) {
+					second = symptoms[i][j];
+					secondind = j;
+				}
+				else if (symptoms[i][j] >= third) {
+					third = symptoms[i][j];
+					thirdind = j;
+				}
+			}
+			ArrayList<String> individual = new ArrayList<String>();
+			individual.add(userslist.get(i));
+			individual.add(ingredientslist.get(maxind));
+			individual.add(ingredientslist.get(secondind));
+			individual.add(ingredientslist.get(thirdind));
+			System.out.println(userslist.get(i) + " " + ingredientslist.get(maxind));
+			System.out.println(userslist.get(i) + " " + ingredientslist.get(secondind) );
+			System.out.println(userslist.get(i) + " " + ingredientslist.get(thirdind) );
+			output.add(individual);
+			max = 0;
+			maxind = 0;
+		}
+		Writer writer = Files.newBufferedWriter(Paths.get(results));
+		CSVWriter csvWriter = new CSVWriter(writer, CSVWriter.DEFAULT_SEPARATOR, CSVWriter.NO_QUOTE_CHARACTER,
+				CSVWriter.DEFAULT_ESCAPE_CHARACTER, CSVWriter.DEFAULT_LINE_END);{
+					for (int i = 0; i < users.size(); i++) {
+						String array[] = new String[4];
+						array[0]=output.get(i).get(0);
+						array[1] = output.get(i).get(1);
+						array[2]=output.get(i).get(2);
+						array[3] = output.get(i).get(3);
+					csvWriter.writeNext(array);;
+					}
+					writer.close();
+				}
+     } 
+		
+
+	}
+
+
