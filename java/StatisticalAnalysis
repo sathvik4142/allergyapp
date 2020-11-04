@@ -34,6 +34,7 @@ public class StatisticalAnalysis {
 		}
 		System.out.println(users);
 		System.out.println(ingredients);
+		//making a list of ingredients
 		List<String> ingredientslist = new ArrayList<String>(ingredients.size());
 		for (String x : ingredients) {
 			ingredientslist.add(x.toLowerCase());
@@ -62,6 +63,7 @@ public class StatisticalAnalysis {
 		int third = -1;
 		int thirdind = 0;
 		int maxind = 0;
+		//find the top 3 ingredients that appear during an allergy
 		for (int i = 0; i <users.size(); i++) {
 			for (int j = 0; j < ingredients.size(); j++) {
 				if (symptoms[i][j] > max) {
@@ -89,6 +91,7 @@ public class StatisticalAnalysis {
 			max = 0;
 			maxind = 0;
 		}
+		//print results to new file
 		Writer writer = Files.newBufferedWriter(Paths.get(results));
 		CSVWriter csvWriter = new CSVWriter(writer, CSVWriter.DEFAULT_SEPARATOR, CSVWriter.NO_QUOTE_CHARACTER,
 				CSVWriter.DEFAULT_ESCAPE_CHARACTER, CSVWriter.DEFAULT_LINE_END);{
