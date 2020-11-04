@@ -8,6 +8,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 %matplotlib inline
+#read the data
 input_data = pd.read_csv("/kaggle/input/newallergy/newallergyresults.csv")
 y_train = input_data["result"].values
 X_train = input_data["food"].values
@@ -17,6 +18,7 @@ X_test = test_data["food"].values
 print (y_train)
 print (X_train)
 i = 0
+#classify the data
 while i < len(y_train):
     if (y_train[i] == "symptom"):
         y_train[i] = 1
@@ -31,7 +33,7 @@ while j < len(y_test):
         y_test[j] = 0
     j = j + 1
 print(y_test)
-#train the vocabulary
+#train the vocabulary and create the dictionary
 from sklearn.feature_extraction.text import CountVectorizer
 import tensorflow as tf
 bow = CountVectorizer(min_df=0, lowercase=False)
@@ -51,4 +53,5 @@ y_test = y_test.astype('int')
 classifier = LogisticRegression()
 classifier.fit(X_train, y_train)
 score = classifier.score(X_test, y_test)
+
 print(score)
